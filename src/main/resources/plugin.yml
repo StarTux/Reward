@@ -1,0 +1,23 @@
+name: Reward
+description: Give rewards to (offline) players
+author: StarTux
+version: 0.1
+main: com.winthier.reward.RewardPlugin
+database: true
+depend: []
+softdepend: [ Vault ]
+commands:
+  reward:
+    description: Admin interface
+    usage: |-
+      /<command> reload - Reload the configuration
+      /<command> create p:<player> [m:<money>] [x:<exp>] [comment...] - Create reward
+      /<command> test - Create a test reward for yourself
+    permission: reward.reward
+permissions:
+  reward.reward:
+    description: use the /reward command
+    default: op
+  reward.receive:
+    description: receive rewards
+    default: true
