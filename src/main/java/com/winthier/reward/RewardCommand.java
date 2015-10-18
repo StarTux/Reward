@@ -47,7 +47,7 @@ class RewardCommand implements CommandExecutor {
                 sender.sendMessage("" + ChatColor.YELLOW + "All rewards of " + target.getName() + " delivered.");
             } else if (args.length >= 1 && args[0].equalsIgnoreCase("test")) {
                 if (!(sender instanceof Player)) throw new CommandException("Player expected");
-                Builder builder = plugin.createBuilder();
+                RewardBuilder builder = plugin.createBuilder();
                 builder.player((Player)sender);
                 builder.config(YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "test.yml")));
                 Reward reward = builder.store();
@@ -87,7 +87,7 @@ class RewardCommand implements CommandExecutor {
                 UUID uuid = PlayerCache.uuidForName(name);
                 if (uuid == null) throw new CommandException("Player not found: " + name);
                 name = PlayerCache.nameForUuid(uuid);
-                Builder builder = plugin.createBuilder();
+                RewardBuilder builder = plugin.createBuilder();
                 builder.uuid(uuid);
                 builder.name(name);
                 builder.comment(comment.toString().trim());

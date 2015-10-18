@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.ChatColor;
@@ -25,9 +26,11 @@ public class RewardPlugin extends JavaPlugin implements Listener {
     boolean deliver;
     Economy economy;
     public static final String PERM_RECEIVE = "reward.receive";
+    @Getter static RewardPlugin instance = null;
 
     @Override
     public void onEnable() {
+        instance = this;
         saveDefaultConfig();
         reloadConfig();
         configure();
@@ -82,8 +85,8 @@ public class RewardPlugin extends JavaPlugin implements Listener {
         return (economy != null);
     }
 
-    public Builder createBuilder() {
-        return new Builder(this);
+    public RewardBuilder createBuilder() {
+        return new RewardBuilder(this);
     }
 
     /**

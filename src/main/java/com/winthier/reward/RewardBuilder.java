@@ -10,7 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class Builder {
+public class RewardBuilder {
     final RewardPlugin plugin;
     UUID uuid;
     String name;
@@ -22,11 +22,15 @@ public class Builder {
     final Map<String, Integer> flags = new HashMap<>();
     final List<String> commands = new ArrayList<>();
 
-    public Builder(RewardPlugin plugin) {
+    public RewardBuilder(RewardPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public Builder player(Player player) {
+    public static RewardBuilder create() {
+        return RewardPlugin.getInstance().createBuilder();
+    }
+
+    public RewardBuilder player(Player player) {
         uuid = player.getUniqueId();
         name = player.getName();
         return this;
@@ -36,7 +40,7 @@ public class Builder {
      * Only call once. Additional calls will override previous
      * calls. You have to call either this or name().
      */
-    public Builder uuid(UUID uuid) {
+    public RewardBuilder uuid(UUID uuid) {
         this.uuid = uuid;
         return this;
     }
@@ -45,7 +49,7 @@ public class Builder {
      * Only call once. Additional calls will override previous
      * calls. You have to call either this or uuid().
      */
-    public Builder name(String name) {
+    public RewardBuilder name(String name) {
         this.name = name;
         return this;
     }
@@ -54,7 +58,7 @@ public class Builder {
      * Only call once. Additional calls will override previous
      * calls.
      */
-    public Builder comment(String comment) {
+    public RewardBuilder comment(String comment) {
         this.comment = comment;
         return this;
     }
@@ -63,7 +67,7 @@ public class Builder {
      * Call as often as needed. Additional calls will add more
      * items.
      */
-    public Builder item(ItemStack... items) {
+    public RewardBuilder item(ItemStack... items) {
         for (ItemStack item : items) this.items.add(item);
         return this;
     }
@@ -72,7 +76,7 @@ public class Builder {
      * Call as often as needed. Additional calls will add more
      * items.
      */
-    public Builder items(List<ItemStack> items) {
+    public RewardBuilder items(List<ItemStack> items) {
         for (ItemStack item : items) this.items.add(item);
         return this;
     }
@@ -80,7 +84,7 @@ public class Builder {
     /**
      * Add exp. Call as often as needed.
      */
-    public Builder exp(int exp) {
+    public RewardBuilder exp(int exp) {
         this.exp += exp;
         return this;
     }
@@ -88,7 +92,7 @@ public class Builder {
     /**
      * Add money. Call as often as needed.
      */
-    public Builder money(double money) {
+    public RewardBuilder money(double money) {
         this.money += money;
         return this;
     }
@@ -97,7 +101,7 @@ public class Builder {
      * Add a currency. Call as often as needed. Multiple calls
      * with the same name will be added up.
      */
-    public Builder currency(String name, int amount) {
+    public RewardBuilder currency(String name, int amount) {
         Integer value = currencies.get(name);
         if (value == null) value = 0;
         value += amount;
@@ -109,7 +113,7 @@ public class Builder {
      * Set a flag. Subsequent calls with the same name will
      * override the previous value.
      */
-    public Builder flag(String name, int amount) {
+    public RewardBuilder flag(String name, int amount) {
         flags.put(name, amount);
         return this;
     }
@@ -119,7 +123,7 @@ public class Builder {
      * %player% -> name of the player
      * %uuid% -> uuid of the player
      */
-    public Builder command(String command) {
+    public RewardBuilder command(String command) {
         commands.add(command);
         return this;
     }
@@ -127,7 +131,7 @@ public class Builder {
     /**
      * Add rewards via configuration section.
      */
-    public Builder config(ConfigurationSection config) {
+    public RewardBuilder config(ConfigurationSection config) {
         if (config == null) return this;
         comment = config.getString("Comment", comment);
         exp += config.getInt("Exp", 0);

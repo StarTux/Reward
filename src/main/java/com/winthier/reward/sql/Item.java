@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +21,6 @@ import lombok.Setter;
 @Setter
 public class Item {
     @Id Integer id;
-    @Version Integer version;
     @ManyToOne Reward reward;
     @NotNull Integer lineNumber;
     @Length(max = 255) String line;
