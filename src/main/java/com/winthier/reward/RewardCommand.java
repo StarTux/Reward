@@ -49,7 +49,11 @@ class RewardCommand implements CommandExecutor {
                 if (!(sender instanceof Player)) throw new CommandException("Player expected");
                 RewardBuilder builder = plugin.createBuilder();
                 builder.player((Player)sender);
-                builder.config(YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "test.yml")));
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "test.yml"));
+                for (String key : config.getKeys(false)) {
+                    sender.sendMessage("" + ChatColor.YELLOW + "Loading section " + key);
+                    builder.config(config.getConfigurationSection(key));
+                }
                 Reward reward = builder.store();
                 sender.sendMessage("" + ChatColor.YELLOW + "Reward stored as #" + reward.getId());
             } else if (args.length >= 2 && args[0].equalsIgnoreCase("create")) {

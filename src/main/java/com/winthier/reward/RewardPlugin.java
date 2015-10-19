@@ -3,6 +3,8 @@ package com.winthier.reward;
 import com.winthier.reward.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.OptimisticLockException;
@@ -68,7 +70,8 @@ public class RewardPlugin extends JavaPlugin implements Listener {
             Item.class,
             Currency.class,
             Flag.class,
-            Command.class
+            Command.class,
+            Daily.class
             );
     }
 
@@ -87,6 +90,31 @@ public class RewardPlugin extends JavaPlugin implements Listener {
 
     public RewardBuilder createBuilder() {
         return new RewardBuilder(this);
+    }
+
+    static Date getCurrentDay() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    boolean checkAndSetDaily(UUID uuid, String name) {
+        Date today = getCurrentDay();
+        Daily daily = getDatabase().find(Daily.class).where()
+            .eq("uuid", uuid)
+            .eq("name", name)
+            .findUnique();
+        if (daily == null) {
+            getDatabase().save(new Daily(uuid, name, today));
+            return true;
+        }
+        if (today.equals(daily.getDay())) return false;
+        daily.setDay(today);
+        getDatabase().save(daily);
+        return true;
     }
 
     /**
@@ -136,11 +164,6 @@ public class RewardPlugin extends JavaPlugin implements Listener {
         if (reward.getComment() != null) {
             player.sendMessage(reward.getComment());
         }
-        // Exp
-        if (reward.getExp() != null && reward.getExp() > 0) {
-            player.sendMessage("Exp: " + ChatColor.GREEN + reward.getExp());
-            player.giveExp(reward.getExp());
-        }
         // Money
         if (reward.getMoney() != null && reward.getMoney() > 0.01 && economy != null) {
             player.sendMessage("Money: " + ChatColor.GREEN + economy.format(reward.getMoney()));
@@ -148,6 +171,11 @@ public class RewardPlugin extends JavaPlugin implements Listener {
             if (!result.transactionSuccess()) {
                 getLogger().warning("Failed giving money reward to " + player.getName() + ": " + result.errorMessage);
             }
+        }
+        // Exp
+        if (reward.getExp() != null && reward.getExp() > 0) {
+            player.sendMessage("Exp: " + ChatColor.GREEN + reward.getExp());
+            player.giveExp(reward.getExp());
         }
         // Items
         ItemStack[] items = reward.getItemStacks();

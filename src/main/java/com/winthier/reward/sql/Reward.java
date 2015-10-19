@@ -1,20 +1,16 @@
 package com.winthier.reward.sql;
 
-import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
-import com.avaje.ebean.validation.NotEmpty;
 import com.avaje.ebean.validation.NotNull;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -32,8 +28,8 @@ import org.bukkit.inventory.ItemStack;
 public class Reward {
     @Id Integer id;
     @Version Integer version;
-    Timestamp created;
-    Timestamp delivered;
+    Date created;
+    Date delivered;
     @NotNull UUID uuid; // player uuid
     @Length(max = 16) String name; // player name, optional
     String comment;
@@ -111,10 +107,10 @@ public class Reward {
     }
 
     public void delivered() {
-        setDelivered(new Timestamp(System.currentTimeMillis()));
+        setDelivered(new Date());
     }
 
     public void createdNow() {
-        setCreated(new Timestamp(System.currentTimeMillis()));
+        setCreated(new Date());
     }
 }

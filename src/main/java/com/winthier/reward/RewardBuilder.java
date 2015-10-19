@@ -2,6 +2,7 @@ package com.winthier.reward;
 
 import com.winthier.reward.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,10 +134,15 @@ public class RewardBuilder {
      */
     public RewardBuilder config(ConfigurationSection config) {
         if (config == null) return this;
+        plugin.getLogger().info("Loading reward config " + config.getName() + " for player " + name + "...");
+        if (config.isSet("Daily") && uuid != null && !plugin.checkAndSetDaily(uuid, config.getString("Daily"))) {
+            plugin.getLogger().info("Skipping reward config " + config.getName() + " because the daily " + config.getString("Daily") + " has already been taken by " + name);
+            return this;
+        }
         comment = config.getString("Comment", comment);
         exp += config.getInt("Exp", 0);
         money += config.getDouble("Money", 0.0);
-        for (Object o : config.getList("items")) {
+        for (Object o : config.getList("items", Collections.emptyList())) {
             if (o instanceof ItemStack) {
                 items.add((ItemStack)o);
             } else if (o instanceof Map) {
