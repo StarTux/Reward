@@ -34,8 +34,8 @@ public class Reward {
     @Version Integer version;
     Timestamp created;
     Timestamp delivered;
-    UUID uuid; // player uuid
-    @Length(max = 16) String name; // player name, if uuid == null
+    @NotNull UUID uuid; // player uuid
+    @Length(max = 16) String name; // player name, optional
     String comment;
     Integer exp;
     Double money;
