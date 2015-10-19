@@ -173,9 +173,8 @@ public class RewardBuilder {
     }
 
     public Reward store() {
-        if (uuid == null && name == null) {
-            throw new RuntimeException("UUID and name can't both be undefined.");
-        }
+        if (uuid == null) throw new RuntimeException("UUID cannot be undefined.");
+        if (isEmpty()) return null;
         Reward reward = new Reward();
         if (uuid != null) reward.setUuid(uuid);
         if (name != null) reward.setName(name);
@@ -189,5 +188,15 @@ public class RewardBuilder {
         reward.createdNow();
         plugin.getDatabase().save(reward);
         return reward;
+    }
+
+    public boolean isEmpty() {
+        return
+            money < 0.01 &&
+            exp == 0 &&
+            items.isEmpty() &&
+            currencies.isEmpty() &&
+            flags.isEmpty() &&
+            commands.isEmpty();
     }
 }
