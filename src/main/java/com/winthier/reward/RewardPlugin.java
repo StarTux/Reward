@@ -1,6 +1,7 @@
 package com.winthier.reward;
 
 import com.winthier.reward.sql.*;
+import com.winthier.sql.SQLDatabase;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -24,11 +25,13 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+@Getter
 public class RewardPlugin extends JavaPlugin implements Listener {
     boolean deliver;
     Economy economy;
     public static final String PERM_RECEIVE = "reward.receive";
     @Getter static RewardPlugin instance = null;
+    private SQLDatabase db;
 
     @Override
     public void onEnable() {
@@ -36,7 +39,14 @@ public class RewardPlugin extends JavaPlugin implements Listener {
         saveDefaultConfig();
         reloadConfig();
         configure();
-        setupDatabase();
+        db = new SQLDatabase(this);
+        db.registerTables(Reward.class,
+                          Item.class,
+                          Currency.class,
+                          Flag.class,
+                          Command.class,
+                          Daily.class);
+        db.createAllTables();
         getCommand("reward").setExecutor(new RewardCommand(this));
         getServer().getPluginManager().registerEvents(this, this);
     }
@@ -46,33 +56,6 @@ public class RewardPlugin extends JavaPlugin implements Listener {
         if (deliver && !setupEconomy()) {
             getLogger().warning("Failed to setup economy");
         }
-    }
-
-    void setupDatabase() {
-        try {
-            for (Class<?> clazz : getDatabaseClasses()) {
-                getDatabase().find(clazz).findRowCount();
-            }
-        } catch (PersistenceException tmp) {
-            System.out.println("Installing database for " + getDescription().getName() + " due to first time usage");
-            try {
-                installDDL();
-            } catch (PersistenceException pe) {
-                pe.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public List<Class<?>> getDatabaseClasses() {
-        return Arrays.asList(
-            Reward.class,
-            Item.class,
-            Currency.class,
-            Flag.class,
-            Command.class,
-            Daily.class
-            );
     }
 
     @Override
@@ -103,17 +86,17 @@ public class RewardPlugin extends JavaPlugin implements Listener {
 
     boolean checkAndSetDaily(UUID uuid, String name) {
         Date today = getCurrentDay();
-        Daily daily = getDatabase().find(Daily.class).where()
+        Daily daily = db.find(Daily.class).where()
             .eq("uuid", uuid)
             .eq("name", name)
             .findUnique();
         if (daily == null) {
-            getDatabase().save(new Daily(uuid, name, today));
+            db.save(new Daily(uuid, name, today));
             return true;
         }
         if (today.equals(daily.getDay())) return false;
         daily.setDay(today);
-        getDatabase().save(daily);
+        db.save(daily);
         return true;
     }
 
@@ -136,19 +119,18 @@ public class RewardPlugin extends JavaPlugin implements Listener {
 
     public void deliverAll(Player player) {
         if (!player.isValid() || !player.isOnline()) return;
-        List<Reward> rewards = getDatabase()
+        List<Reward> rewards = db
             .find(Reward.class)
             .where()
             .isNull("delivered")
-            .or(getDatabase().getExpressionFactory().eq("uuid", player.getUniqueId()),
-                getDatabase().getExpressionFactory().eq("name", player.getName()))
+            .eq("uuid", player.getUniqueId())
             .findList();
         if (rewards.isEmpty()) return;
         for (Reward reward : rewards) {
             // Mark as delivered
             reward.delivered();
             try {
-                getDatabase().save(reward);
+                db.save(reward);
             } catch (OptimisticLockException ole) {
                 ole.printStackTrace();
                 continue;

@@ -36,7 +36,7 @@ class RewardCommand implements CommandExecutor {
                 Integer id = null;
                 try { id = Integer.parseInt(idArg); } catch (NumberFormatException nfe) {}
                 if (id == null || id <= 0) throw new CommandException("Positive number expected: " + idArg);
-                Reward reward = plugin.getDatabase().find(Reward.class, id);
+                Reward reward = plugin.getDb().find(Reward.class, id);
                 if (reward == null) throw new CommandException("Reward not found: #" + id);
                 plugin.deliver(reward, player);
                 sender.sendMessage("" + ChatColor.YELLOW + "Rewards delivered to you");

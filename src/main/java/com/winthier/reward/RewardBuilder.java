@@ -186,7 +186,7 @@ public class RewardBuilder {
         if (!flags.isEmpty()) reward.setFlagMap(flags);
         if (!commands.isEmpty()) reward.setCommandList(commands);
         reward.createdNow();
-        plugin.getDatabase().save(reward);
+        plugin.getDb().save(reward);
         return reward;
     }
 

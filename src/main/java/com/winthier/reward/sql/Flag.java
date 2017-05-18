@@ -1,12 +1,9 @@
 package com.winthier.reward.sql;
 
-import com.avaje.ebean.annotation.CreatedTimestamp;
-import com.avaje.ebean.validation.Length;
-import com.avaje.ebean.validation.NotEmpty;
-import com.avaje.ebean.validation.NotNull;
 import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -22,11 +19,11 @@ import lombok.Setter;
 public class Flag {
     @Id Integer id;
     @ManyToOne(optional=false) Reward reward;
-    @NotNull @Length(max = 255) String name;
-    @NotNull Integer value;
+    @Column(nullable = false, length = 255) String name;
+    @Column(nullable = false) Integer value;
 
     public Flag() {}
-    
+
     public Flag(Reward reward, String name, Integer value) {
         setReward(reward);
         setName(name);

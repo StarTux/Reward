@@ -3,8 +3,7 @@ description: Give rewards to (offline) players
 author: StarTux
 version: 0.1
 main: com.winthier.reward.RewardPlugin
-database: true
-depend: []
+depend: [ SQL ]
 softdepend: [ Vault ]
 commands:
   reward:

@@ -1,7 +1,5 @@
 package com.winthier.reward.sql;
 
-import com.avaje.ebean.validation.Length;
-import com.avaje.ebean.validation.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -9,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -30,8 +29,8 @@ public class Reward {
     @Version Integer version;
     Date created;
     Date delivered;
-    @NotNull UUID uuid; // player uuid
-    @Length(max = 16) String name; // player name, optional
+    @Column(nullable = false) UUID uuid; // player uuid
+    @Column(length = 16) String name; // player name, optional
     String comment;
     Integer exp;
     Double money;

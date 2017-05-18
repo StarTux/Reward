@@ -1,10 +1,8 @@
 package com.winthier.reward.sql;
 
-import com.avaje.ebean.validation.Length;
-import com.avaje.ebean.validation.NotEmpty;
-import com.avaje.ebean.validation.NotNull;
 import java.util.Date;
 import java.util.UUID;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -21,12 +19,12 @@ import lombok.Setter;
 public class Daily {
     @Id Integer id;
     @Version Date version;
-    @NotNull UUID uuid;
-    @NotNull @Length(max = 255) String name;
-    @NotNull Date day;
+    @Column(nullable = false) UUID uuid;
+    @Column(nullable = false, length = 255) String name;
+    @Column(nullable = false) Date day;
 
     public Daily() {}
-    
+
     public Daily(UUID uuid, String name, Date day) {
         setUuid(uuid);
         setName(name);
