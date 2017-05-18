@@ -1,5 +1,6 @@
 package com.winthier.reward.sql;
 
+import com.winthier.reward.RewardPlugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -10,7 +11,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
@@ -34,10 +34,22 @@ public class Reward {
     String comment;
     Integer exp;
     Double money;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "reward") List<Item> items;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "reward") List<Currency> currencies;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "reward") List<Flag> flags;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "reward") List<Command> commands;
+
+    public List<Item> getItems() {
+        return RewardPlugin.getInstance().getDb().find(Item.class).eq("reward", this).findList();
+    }
+
+    public List<Currency> getCurrencies() {
+        return RewardPlugin.getInstance().getDb().find(Currency.class).eq("reward", this).findList();
+    }
+
+    public List<Flag> getFlags() {
+        return RewardPlugin.getInstance().getDb().find(Flag.class).eq("reward", this).findList();
+    }
+
+    public List<Command> getCommands() {
+        return RewardPlugin.getInstance().getDb().find(Command.class).eq("reward", this).findList();
+    }
 
     public void setItemStacks(ItemStack... itemStacks) {
         YamlConfiguration config = new YamlConfiguration();
@@ -51,7 +63,7 @@ public class Reward {
             String line = string.substring(begin, end);
             items.add(new Item(this, i, line));
         }
-        setItems(items);
+        RewardPlugin.getInstance().getDb().save(items);
     }
 
     public void setItemStacks(List<ItemStack> itemStacks) {
@@ -63,21 +75,21 @@ public class Reward {
         for (Map.Entry<String, Integer> entry : currencies.entrySet()) {
             list.add(new Currency(this, entry.getKey(), entry.getValue()));
         }
-        setCurrencies(list);
+        RewardPlugin.getInstance().getDb().save(list);
     }
 
-    public void setFlagMap(Map<String, Integer> flags) { 
+    public void setFlagMap(Map<String, Integer> flags) {
         List<Flag> list = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : flags.entrySet()) {
             list.add(new Flag(this, entry.getKey(), entry.getValue()));
         }
-        setFlags(list);
+        RewardPlugin.getInstance().getDb().save(list);
     }
 
     public void setCommandList(List<String> commands) {
         List<Command> list = new ArrayList<>();
         for (String command : commands) list.add(new Command(this, command));
-        setCommands(list);
+        RewardPlugin.getInstance().getDb().save(list);
     }
 
     public ItemStack[] getItemStacks() {

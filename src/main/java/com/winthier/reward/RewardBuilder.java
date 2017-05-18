@@ -181,12 +181,12 @@ public class RewardBuilder {
         if (comment != null) reward.setComment(comment);
         if (money > 0.01) reward.setMoney(money);
         if (exp > 0) reward.setExp(exp);
+        reward.createdNow();
+        plugin.getDb().save(reward);
         if (!items.isEmpty()) reward.setItemStacks(items);
         if (!currencies.isEmpty()) reward.setCurrencyMap(currencies);
         if (!flags.isEmpty()) reward.setFlagMap(flags);
         if (!commands.isEmpty()) reward.setCommandList(commands);
-        reward.createdNow();
-        plugin.getDb().save(reward);
         return reward;
     }
 
